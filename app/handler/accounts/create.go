@@ -7,7 +7,6 @@ import (
 
 	"yatter-backend-go/app/domain/object"
 	"yatter-backend-go/app/handler/httperror"
-	"github.com/go-chi/chi"
 )
 
 // Request body for `POST /v1/accounts`
@@ -63,28 +62,6 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	// 成功レスポンスを返す
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(account); err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-}
-
-// Handle request for `GET /v1/accounts/{username}`
-func (h *handler) GetAccount(w http.ResponseWriter, r *http.Request) {
-	username := chi.URLParam(r, "username")
-
-	// ユーザー名をログに出力
-	account, err := h.app.Dao.Account().FindByUsername(r.Context(), username)
-	if err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-	if account == nil {
-		http.Error(w, "Account not found", http.StatusNotFound)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(account); err != nil {
 		httperror.InternalServerError(w, err)
 		return

@@ -62,7 +62,7 @@ func (h *handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 成功レスポンスを返す
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(account); err != nil {
 		httperror.InternalServerError(w, err)
 		return

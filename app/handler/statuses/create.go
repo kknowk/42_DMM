@@ -4,13 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 	"yatter-backend-go/app/domain/object"
 	"yatter-backend-go/app/handler/auth"
 	"yatter-backend-go/app/handler/httperror"
-
-	"github.com/go-chi/chi"
 )
 
 type StatusRequest struct {
@@ -97,68 +94,4 @@ func (h *handler) CreateStatus(w http.ResponseWriter, r *http.Request) {
 		httperror.InternalServerError(w, err)
 		return
 	}
-}
-
-// Handle request for `GET /v1/accounts/{username}`
-func (h *handler) GetStatus(w http.ResponseWriter, r *http.Request) {
-	// パスからIDを取得
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
-		return
-	}
-
-	// データベースからステータスを取得
-	// fmt.Println("id: ", id)
-	status, err := h.app.Dao.Status().FindByID(r.Context(), id)
-	if err != nil {
-		http.Error(w, "Status not found", http.StatusNotFound)
-		return
-	}
-
-	account, err := h.app.Dao.Account().FindByUsername(r.Context(), status.Username)
-	if err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-
-	// 応答用のStatusResponseを作成
-	response := GetStatus{
-		ID:				id,
-		Account:		account,
-		Content:		status.Content,
-		CreateAt:		status.CreateAt,
-		MediaAttachments:	[]MediaAttachment{}, // 空のメディア添付情報
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-}
-
-// DeleteStatus は指定されたIDのステータスを削除するためのリクエストを処理します
-func (h *handler) DeleteStatus(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
-		return
-	}
-
-	status, err := h.app.Dao.Status().FindByID(r.Context(), id)
-	if err != nil {
-		http.Error(w, "Status not found", http.StatusNotFound)
-		return
-	}
-
-	err = h.app.Dao.Status().DeleteStatus(r.Context(), status)
-	if err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
 }

@@ -12,6 +12,7 @@ CREATE TABLE `account` (
 
 CREATE TABLE `status` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) NOT NULL,
   `account_id` bigint(20) NOT NULL,
   `content` text NOT NULL,
   `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

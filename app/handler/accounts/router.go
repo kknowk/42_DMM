@@ -6,8 +6,6 @@ import (
 	"yatter-backend-go/app/app"
 
 	"github.com/go-chi/chi"
-
-	"yatter-backend-go/app/handler/accounts"
 )
 
 // Implementation of handler
@@ -22,8 +20,9 @@ func NewRouter(app *app.App) http.Handler {
 	h := &handler{app: app}
 	r.Post("/", h.Create)
 
-	// TODO: Add other APIs
-	r.Mount("/v1/accounts", accounts.NewRouter(app))
+	r.Post("/v1/accounts", h.Create)
 
+	r.Get("/{username}", h.GetAccount)
+	
 	return r
 }

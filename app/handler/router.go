@@ -7,6 +7,8 @@ import (
 	"yatter-backend-go/app/app"
 	"yatter-backend-go/app/handler/accounts"
 	"yatter-backend-go/app/handler/health"
+	"yatter-backend-go/app/handler/statuses"
+	"yatter-backend-go/app/handler/timelines"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -30,6 +32,11 @@ func NewRouter(app *app.App) http.Handler {
 
 	r.Mount("/v1/accounts", accounts.NewRouter(app))
 	r.Mount("/v1/health", health.NewRouter())
+
+	r.Mount("/v1/statuses", statuses.NewRouter(app))
+	
+	r.Mount("/v1/timelines", timelines.NewRouter(app))
+	
 
 	return r
 }
